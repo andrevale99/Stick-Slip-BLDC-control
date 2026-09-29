@@ -35,7 +35,8 @@ DEFAULT_CSV = "closedloop_simulation.csv"
 DEFAULT_PASTA = "img/"
 DEFAULT_FIGSIZE = (15,10)
 
-no_xlabel = plt.tick_params(axis='x', labelbottom=False)
+def no_xlabel():
+    plt.tick_params(axis='x', labelbottom=False)
 
 str_time = 'time'
 str_va = 'Va'
@@ -85,7 +86,7 @@ try:
 	vqref = data[str_vqref]
 
 	#===========================================================
-	# tempo x iabc,rpm,Te,iq,id
+	# tempo x iabc,rpm
 	#===========================================================
 
 	plt.figure(figsize=DEFAULT_FIGSIZE)
@@ -93,7 +94,7 @@ try:
 	plt.plot(time, iabc.T)
 	plt.ylabel('A')
 	plt.grid()
-	no_xlabel
+	no_xlabel()
 
 	plt.subplot(212)
 	plt.plot(time,rpm)
@@ -116,7 +117,7 @@ try:
 	plt.plot(time, iqref, label=r'$i_{qref}$', ls='--')
 	plt.ylabel('A')
 	plt.grid()
-	no_xlabel
+	no_xlabel()
 
 	plt.subplot(212)
 	plt.plot(time,te)
@@ -127,6 +128,8 @@ try:
 	plt.tight_layout()
 
 	plt.savefig(pasta_saida+"02_iq-id-Te.pdf")
+
+	plt.show()
 
 except:
 	
@@ -139,7 +142,7 @@ except:
 	plt.plot(time, iabc.T)
 	plt.ylabel('A')
 	plt.grid()
-	no_xlabel
+	no_xlabel()
 
 	plt.subplot(212)
 	plt.plot(time,rpm)
