@@ -10,7 +10,7 @@ from bldc import BLDCMotor, TimeSimulation, bldc_step, rpm_to_rads
 from progressbar import progress_bar_init, progress_bar_update, progress_bar_finish
 
 # ajustar conforme os limites reais do projeto original (nao enviados)
-PI_IQ_MIN, PI_IQ_MAX = -100.0, 100.0
+PI_IQ_MIN, PI_IQ_MAX = -50.0, 50.0
 
 def simulation_bldc_malha_corrente_velocidade(args):
     motor = BLDCMotor(
