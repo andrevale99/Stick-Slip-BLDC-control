@@ -12,9 +12,6 @@ from progressbar import progress_bar_init, progress_bar_update, progress_bar_fin
 # ajustar conforme os limites reais do projeto original (nao enviados)
 PI_IQ_MIN, PI_IQ_MAX = -100.0, 100.0
 
-# ajustar conforme os limites reais do projeto original (nao enviados)
-PI_IQ_MIN, PI_IQ_MAX = -100.0, 100.0
-
 def simulation_bldc_malha_corrente_velocidade(args):
     motor = BLDCMotor(
         R=args.R, L=args.L, M=args.M, Ke=args.Ke,
