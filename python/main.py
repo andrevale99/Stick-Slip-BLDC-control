@@ -2,6 +2,7 @@ import math
 from dataclasses import dataclass
 
 from params import get_args
+from graficos import plot_graficos
 from pi_controller import pi_controller_init, pi_controller_update
 from svpwm import svpwm_init, svpwm_modulate, svpwm_carrier, svpwm_gate_state
 from inverter import Inverter, inverter_output_voltage
@@ -125,6 +126,10 @@ def simulation_bldc_malha_corrente_velocidade(args):
     progress_bar_finish(pb)
     log_file.close()
     print(f"\n\nSimulacao concluida. Resultados em \"{args.filename}\".\n")
+
+    print(f'\nPlot dos graficos de iabc, Te, idq, RPM e fft das correntes\n\n')
+    plot_graficos(args.filename)
+
     return 0
 
 
