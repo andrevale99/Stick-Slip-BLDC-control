@@ -1,37 +1,70 @@
+import sys
 import numpy as np
 
-# --- Parametros do motor ---
-R  = 0.62          # Ohm  - resistencia de armadura
-L  = 8.5e-3       # H    - indutancia de magnetizacao
-M  = 0.0            # H    - indutancia mutua
-Ke = 0.69         # V/(rad/s) - constante eletrica  (7.14 V/krpm) 
-J  = 1.8e-4         # kg.m^2 - momento de inercia
-B  = 3.617e-4         # coeficiente de amortecimento
-Tl = 0.0            # N.m  - torque de carga
-P  = 4             # numero de pares de polos
-Kt = 0.69         # N.m/A - constante de torque
+def gains_controller(caminho):
+    """Le arquivo CHAVE=VALOR (ou 'CHAVE VALOR'); ignora '#' e linhas em branco."""
+    params = {}
+    with open(caminho, "r", encoding="utf-8") as f:
+        for linha in f:
+            linha = linha.split("#", 1)[0].strip()
+            if not linha:
+                continue
+            if "=" in linha:
+                chave, _, valor = linha.partition("=")
+            else:
+                partes = linha.split(None, 1)
+                if len(partes) != 2:
+                    continue
+                chave, valor = partes
+            params[chave.strip()] = valor.strip()
+    return params
 
 
-# --- Parametros do SVPWM (chaveamento real do inversor) ---
-Fsw        = 10000   # Hz - frequencia de chaveamento
 
-omegacc = Fsw / 20 * 2 * np.pi
-Kpq = L * omegacc
-Kiq = R * omegacc
+if __name__ == "__main__":
+    
+    if len(sys.argv) != 2:
+        sys.exit(f"Uso: python {sys.argv[0]} <arquivo_de_parametros.txt>")
 
-Kpq = round(Kpq,3)
-Kiq = round(Kiq,3)
+    try:
+        cfg = gains_controller(sys.argv[1])
+    except OSError as e:
+        sys.exit(f"Erro ao abrir '{sys.argv[1]}': {e}")
 
-omegacs = omegacc / 5 
-Kpomega = J * omegacs / Kt
-Kiomega = J * omegacs**2 / (5*Kt)
+    try:
+        R   = float(cfg["R"])
+        L   = float(cfg["L"])
+        M   = float(cfg.get("M", 0.0))
+        Ke  = float(cfg["Ke"])
+        J   = float(cfg["J"])
+        B   = float(cfg.get("B", 0.0))
+        Tl  = float(cfg.get("Tl", 0.0))
+        P   = int(cfg.get("P", 1))
+        Kt  = float(cfg["Kt"])
+        Fsw = float(cfg["Fsw"])
+    except KeyError as e:
+        sys.exit(f"Parametro obrigatorio ausente no arquivo: {e}")
+    except ValueError as e:
+        sys.exit(f"Valor invalido no arquivo: {e}")
 
-Kpomega = round(Kpomega,3)
-Kiomega = round(Kiomega,3)
 
-print(f'KpOmega = {Kpomega}     # ganho proporcional - malha de velocidade')
-print(f'KiOmega = {Kiomega}     # ganho integral - malha de velocidade')
-print(f'KpId    = {Kpq}         # ganho proporcional - malha de corrente id')
-print(f'KiId    = {Kiq}         # ganho integral - malha de corrente id')
-print(f'KpIq    = {Kpq}         # ganho proporcional - malha de corrente iq')
-print(f'KiIq    = {Kiq}         # ganho integral - malha de corrente iq')
+    omegacc = Fsw / 20 * 2 * np.pi
+    Kpq = L * omegacc
+    Kiq = R * omegacc
+
+    Kpq = round(Kpq,3)
+    Kiq = round(Kiq,3)
+
+    omegacs = omegacc / 5 
+    Kpomega = J * omegacs / Kt
+    Kiomega = J * omegacs**2 / (5*Kt)
+
+    Kpomega = round(Kpomega,3)
+    Kiomega = round(Kiomega,3)
+
+    print(f'KpOmega = {Kpomega}     # ganho proporcional - malha de velocidade')
+    print(f'KiOmega = {Kiomega}     # ganho integral - malha de velocidade')
+    print(f'KpId    = {Kpq}         # ganho proporcional - malha de corrente id')
+    print(f'KiId    = {Kiq}         # ganho integral - malha de corrente id')
+    print(f'KpIq    = {Kpq}         # ganho proporcional - malha de corrente iq')
+    print(f'KiIq    = {Kiq}         # ganho integral - malha de corrente iq')
